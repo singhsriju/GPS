@@ -202,10 +202,19 @@ def load_dataset():
     if not os.path.exists(DATA_PATH):
         return None
     df = pd.read_csv(DATA_PATH, low_memory=False)
+    wtp_map = {"Nothing - free only":0,"Up to Rs99/mo":70,"Rs100-299/mo":200,
+               "Rs300-499/mo":400,"Rs500-999/mo":750,"Above Rs1000/mo":1200}
     if "wtp_monthly_numeric" not in df.columns:
-        wtp_map = {"Nothing - free only":0,"Up to Rs99/mo":70,"Rs100-299/mo":200,
-                   "Rs300-499/mo":400,"Rs500-999/mo":750,"Above Rs1000/mo":1200}
-        df["wtp_monthly_numeric"] = df["Q28_monthly_wtp"].map(wtp_map).fillna(0)
+        if "Q28_monthly_wtp" in df.columns:
+            df["wtp_monthly_numeric"] = df["Q28_monthly_wtp"].map(wtp_map).fillna(0)
+        else:
+            df["wtp_monthly_numeric"] = 0
+    if "Q31_platform_adoption" not in df.columns:
+        df["Q31_platform_adoption"] = "Neutral"
+    if "Q14_decision_urgency" not in df.columns:
+        df["Q14_decision_urgency"] = "6-12 months"
+    if "Q10_career_clarity" not in df.columns:
+        df["Q10_career_clarity"] = "Somewhat confused"
     return df
 
 
