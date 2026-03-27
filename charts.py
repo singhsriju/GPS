@@ -57,6 +57,8 @@ def _base(fig, height=380, margin_t=52):
 
 
 def age_distribution(df):
+    if "Q1_age" not in df.columns:
+        return go.Figure()
     order = ["Under 15","15-17","18-20","21-23","24 or above"]
     vc = df["Q1_age"].value_counts().reindex(order, fill_value=0).reset_index()
     vc.columns = ["Age","Count"]
@@ -76,6 +78,8 @@ def age_distribution(df):
 
 
 def gender_donut(df):
+    if "Q2_gender" not in df.columns:
+        return go.Figure()
     vc = df["Q2_gender"].value_counts(dropna=True).reset_index()
     vc.columns = ["Gender","Count"]
     fig = go.Figure(go.Pie(labels=vc["Gender"], values=vc["Count"], hole=0.55,
@@ -89,6 +93,8 @@ def gender_donut(df):
 
 
 def location_bar(df):
+    if "Q4_location" not in df.columns:
+        return go.Figure()
     order = ["Metro city","Tier-2 city","Tier-3 city","Rural / Village"]
     vc = df["Q4_location"].value_counts().reindex(order, fill_value=0).reset_index()
     vc.columns = ["Location","Count"]
@@ -108,6 +114,8 @@ def location_bar(df):
 
 
 def income_waterfall(df):
+    if "Q5_income" not in df.columns:
+        return go.Figure()
     order = ["Below Rs2L","Rs2-5L","Rs5-10L","Rs10-20L","Above Rs20L","Prefer not to say"]
     vc = df["Q5_income"].value_counts(dropna=True).reindex(order, fill_value=0).reset_index()
     vc.columns = ["Income","Count"]
@@ -126,6 +134,8 @@ def income_waterfall(df):
 
 
 def stream_pie(df):
+    if "Q7_stream" not in df.columns:
+        return go.Figure()
     vc = df["Q7_stream"].value_counts().reset_index()
     vc.columns = ["Stream","Count"]
     fig = go.Figure(go.Pie(labels=vc["Stream"], values=vc["Count"], hole=0.45,
@@ -138,6 +148,8 @@ def stream_pie(df):
 
 
 def clarity_funnel(df):
+    if "Q10_career_clarity" not in df.columns:
+        return go.Figure()
     order = ["Completely clear","Mostly clear","Just exploring","Somewhat confused","Very confused"]
     vc = df["Q10_career_clarity"].value_counts().reindex(order, fill_value=0)
     colors = [TEAL, LTEAL, AMBER, "#F97316", RED]
@@ -155,6 +167,8 @@ def clarity_funnel(df):
 
 
 def urgency_hbar(df):
+    if "Q14_decision_urgency" not in df.columns:
+        return go.Figure()
     order = ["Within 3 months","3-6 months","6-12 months","1-2 years","More than 2 years"]
     vc = df["Q14_decision_urgency"].value_counts().reindex(order, fill_value=0).reset_index()
     vc.columns = ["Urgency","Count"]
@@ -175,6 +189,8 @@ def urgency_hbar(df):
 
 
 def target_dist(df):
+    if "Q31_platform_adoption" not in df.columns:
+        return go.Figure()
     order = ["Definitely would use","Likely would use","Neutral","Unlikely to use","Definitely would NOT use"]
     vc = df["Q31_platform_adoption"].value_counts().reindex(order, fill_value=0).reset_index()
     vc.columns = ["Response","Count"]
@@ -203,6 +219,8 @@ def target_dist(df):
 
 
 def state_chart(df):
+    if "Q3_state" not in df.columns:
+        return go.Figure()
     vc = df["Q3_state"].value_counts().head(12).reset_index()
     vc.columns = ["State","Count"]
     fig = go.Figure(go.Bar(y=vc["State"], x=vc["Count"], orientation="h",
@@ -232,7 +250,7 @@ def wtp_persona_bar(df):
 
 
 def wtp_location_bar(df):
-    if "wtp_monthly_numeric" not in df.columns:
+    if "wtp_monthly_numeric" not in df.columns or "Q4_location" not in df.columns:
         return go.Figure()
     grp = df.groupby("Q4_location")["wtp_monthly_numeric"].mean().reset_index()
     grp.columns = ["Location","AvgWTP"]

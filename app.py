@@ -340,19 +340,19 @@ if page == "🏠  Executive Overview":
         mr = m["regressor"]
 
         c1,c2,c3,c4,c5,c6 = st.columns(6)
-        with c1: kpi("Accuracy",   f"{mc['accuracy']:.1%}",  "RF Classifier", "green")
-        with c2: kpi("ROC-AUC",    f"{mc['roc_auc']:.3f}",   "RF Classifier", "green")
-        with c3: kpi("F1 Score",   f"{mc['f1_score']:.3f}",  "RF Classifier", "green")
-        with c4: kpi("Precision",  f"{mc['precision']:.1%}", "RF Classifier", "blue")
-        with c5: kpi("WTP MAE",    f"₹{mr['mae']:.0f}",      "GBM Regressor", "amber")
-        with c6: kpi("WTP R²",     f"{mr['r2']:.4f}",        "GBM Regressor", "blue")
+        with c1: kpi("Accuracy",   f"{mc.get('accuracy', 0):.1%}",  "RF Classifier", "green")
+        with c2: kpi("ROC-AUC",    f"{mc.get('roc_auc', 0):.3f}",   "RF Classifier", "green")
+        with c3: kpi("F1 Score",   f"{mc.get('f1_score', mc.get('f1-score', 0)):.3f}",  "RF Classifier", "green")
+        with c4: kpi("Precision",  f"{mc.get('precision', 0):.1%}", "RF Classifier", "blue")
+        with c5: kpi("WTP MAE",    f"₹{mr.get('mae', 0):.0f}",      "GBM Regressor", "amber")
+        with c6: kpi("WTP R²",     f"{mr.get('r2', 0):.4f}",        "GBM Regressor", "blue")
 
         st.markdown("<div style='height:6px'></div>", unsafe_allow_html=True)
         c1,c2,c3,c4 = st.columns(4)
-        with c1: kpi("ARM Rules Found",     f"{m['arm']['total_rules']}", "Apriori algorithm", "purple")
-        with c2: kpi("Optimal Clusters (k)", f"{m['clustering']['best_k']}", "K-Means silhouette", "purple")
+        with c1: kpi("ARM Rules Found",     f"{m.get('arm', {}).get('total_rules', 0)}", "Apriori algorithm", "purple")
+        with c2: kpi("Optimal Clusters (k)", f"{m.get('clustering', {}).get('best_k', 5)}", "K-Means silhouette", "purple")
         with c3: kpi("CV F1 (5-fold)",       f"{mc.get('cv_f1_mean',0):.4f}", f"± {mc.get('cv_f1_std',0):.4f}", "green")
-        with c4: kpi("Training Records",     f"{m['training_rows']:,}", "Survey respondents", "blue")
+        with c4: kpi("Training Records",     f"{m.get('training_rows', 0):,}", "Survey respondents", "blue")
 
     else:
         st.markdown("""
@@ -511,7 +511,7 @@ elif page == "🔍  Diagnostic Analysis":
         m_cl = models["metrics"]["clustering"]
         c1,c2,c3,c4 = st.columns(4)
         with c1: kpi("Optimal k",          str(m_cl["best_k"]),                      "Best cluster count", "blue")
-        with c2: kpi("Silhouette Score",   f"{max(m_cl['silhouette_scores']):.4f}",   "Cluster separation", "green")
+        with c2: kpi("Silhouette Score",   f"{max(m_cl.get('silhouette_scores', [0])):.4f}",   "Cluster separation", "green")
         with c3: kpi("k Range Tested",     "2 – 8",                                   "Elbow method", "blue")
         with c4: kpi("Training Records",   f"{models['metrics']['training_rows']:,}", "Survey respondents", "blue")
 
@@ -578,11 +578,11 @@ elif page == "🤖  Predictive Analysis":
         st.markdown("**Target definition:** Positive class (1) = 'Definitely would use' or 'Likely would use' | Negative class (0) = Neutral, Unlikely, Definitely Not")
 
         c1,c2,c3,c4,c5 = st.columns(5)
-        with c1: kpi("Accuracy",  f"{mc['accuracy']:.1%}",  "Test set", "green")
-        with c2: kpi("Precision", f"{mc['precision']:.1%}", "Of predicted positives", "green")
-        with c3: kpi("Recall",    f"{mc['recall']:.1%}",    "Of actual positives", "green")
-        with c4: kpi("F1 Score",  f"{mc['f1_score']:.3f}",  "Harmonic mean P+R", "green")
-        with c5: kpi("ROC-AUC",   f"{mc['roc_auc']:.3f}",   "Area under curve", "blue")
+        with c1: kpi("Accuracy",  f"{mc.get('accuracy', 0):.1%}",  "Test set", "green")
+        with c2: kpi("Precision", f"{mc.get('precision', 0):.1%}", "Of predicted positives", "green")
+        with c3: kpi("Recall",    f"{mc.get('recall', 0):.1%}",    "Of actual positives", "green")
+        with c4: kpi("F1 Score",  f"{mc.get('f1_score', mc.get('f1-score', 0)):.3f}",  "Harmonic mean P+R", "green")
+        with c5: kpi("ROC-AUC",   f"{mc.get('roc_auc', 0):.3f}",   "Area under curve", "blue")
 
         cv_mean = mc.get("cv_f1_mean", 0)
         cv_std  = mc.get("cv_f1_std", 0)
@@ -618,11 +618,11 @@ elif page == "🤖  Predictive Analysis":
                 "Predicts continuous monthly WTP (₹) for each respondent")
 
         c1,c2,c3 = st.columns(3)
-        with c1: kpi("Mean Absolute Error", f"₹{mr['mae']:.0f}", "Avg prediction error", "amber")
-        with c2: kpi("R² Score",            f"{mr['r2']:.4f}",   "Variance explained", "green")
+        with c1: kpi("Mean Absolute Error", f"₹{mr.get('mae', 0):.0f}", "Avg prediction error", "amber")
+        with c2: kpi("R² Score",            f"{mr.get('r2', 0):.4f}",   "Variance explained", "green")
         with c3: kpi("Model Type",          "GBM",               "200 trees, lr=0.05", "blue")
 
-        insight(f"An MAE of ₹{mr['mae']:.0f} means the model's WTP predictions are off by ₹{mr['mae']:.0f} on average. For pricing strategy purposes (tier boundaries at ₹0 / ₹99 / ₹299 / ₹599 / ₹999), this precision is more than sufficient to assign new respondents to the correct pricing tier.")
+        insight(f"An MAE of ₹{mr.get('mae', 0):.0f} means the model's WTP predictions are off by ₹{mr.get('mae', 0):.0f} on average. For pricing strategy purposes (tier boundaries at ₹0 / ₹99 / ₹299 / ₹599 / ₹999), this precision is more than sufficient to assign new respondents to the correct pricing tier.")
 
         c1,c2 = st.columns(2)
         with c1: chart_card(feature_importance_plot(m, "regressor", 18))
